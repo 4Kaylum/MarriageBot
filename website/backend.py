@@ -13,7 +13,9 @@ routes = RouteTableDef()
 
 @routes.get("/r/{code}")
 async def redirect(request:Request):
-    """Handles redirects using codes stored in the db"""
+    """
+    Handles redirects using codes stored in the db.
+    """
 
     code = request.match_info['code']
     async with request.app['database']() as db:
@@ -26,7 +28,9 @@ async def redirect(request:Request):
 @routes.post('/colour_settings')
 @webutils.requires_login()
 async def colour_settings_post_handler(request:Request):
-    """Handles when people submit their new colours"""
+    """
+    Handles when people submit their new colours.
+    """
 
     # Grab the colours from their post request
     try:
@@ -56,7 +60,9 @@ async def colour_settings_post_handler(request:Request):
 @routes.post('/unblock_user')
 @webutils.requires_login()
 async def unblock_user_post_handler(request:Request):
-    """Handles when people submit their new colours"""
+    """
+    Handles when people submit their new colours.
+    """
 
     # Get data
     try:
@@ -90,7 +96,9 @@ async def unblock_user_post_handler(request:Request):
 @routes.post('/set_prefix')
 @webutils.requires_login()
 async def set_prefix(request:Request):
-    """Sets the prefix for a given guild"""
+    """
+    Sets the prefix for a given guild.
+    """
 
     # See if they're logged in
     session = await aiohttp_session.get_session(request)
@@ -137,7 +145,9 @@ async def set_prefix(request:Request):
 @routes.post('/set_max_family_members')
 @webutils.requires_login()
 async def set_max_family_members(request:Request):
-    """Sets the maximum family members for a given guild"""
+    """
+    Sets the maximum family members for a given guild.
+    """
 
     # See if they're logged in
     post_data = await request.post()
@@ -179,7 +189,9 @@ async def set_max_family_members(request:Request):
 @routes.post('/set_gifs_enabled')
 @webutils.requires_login()
 async def set_gifs_enabled(request:Request):
-    """Sets whether or not gifs are enabled for a given guild"""
+    """
+    Sets whether or not gifs are enabled for a given guild.
+    """
 
     # See if they're logged in
     post_data = await request.post()
@@ -218,7 +230,9 @@ async def set_gifs_enabled(request:Request):
 @routes.post('/set_incest_enabled')
 @webutils.requires_login()
 async def set_incest_enabled(request:Request):
-    """Sets the whether or not incest is enabled for a given guild"""
+    """
+    Sets the whether or not incest is enabled for a given guild.
+    """
 
     # See if they're logged in
     session = await aiohttp_session.get_session(request)
@@ -259,7 +273,9 @@ async def set_incest_enabled(request:Request):
 @routes.post('/set_max_allowed_children')
 @webutils.requires_login()
 async def set_max_allowed_children(request:Request):
-    """Sets the max children for the guild"""
+    """
+    Sets the max children for the guild.
+    """
 
     # See if they're logged in
     session = await aiohttp_session.get_session(request)
@@ -305,7 +321,9 @@ async def set_max_allowed_children(request:Request):
 
 @routes.post('/webhooks/voxel_fox/purchase')
 async def paypal_purchase_complete(request:Request):
-    """Handles Paypal throwing data my way"""
+    """
+    Handles Paypal throwing data my way.
+    """
 
     # Check the headers
     if request.headers.get("Authorization", None) != request.app['config']['payment_info']['authorization']:
@@ -323,35 +341,11 @@ async def paypal_purchase_complete(request:Request):
     return Response(status=200)
 
 
-@routes.post('/webhooks/voxel_fox/topgg')
-async def webhook_handler(request:Request):
-    """Sends a PM to the user with the webhook attached if user in owners"""
-
-    if request.headers.get('Authorization', None) != request.app['config']['topgg_authorization']:
-        return Response(400)
-    data = await request.json()
-    time = dt.utcnow()
-
-    # Send proper thanks to the user
-    text = {
-        'upvote': 'Thank you for upvoting MarriageBot!',
-        'test': 'Thanks for the test ping boss.',
-    }.get(data['type'], 'Invalid webhook type from DBL')
-
-    # Redis thanks to user
-    async with request.app['redis']() as re:
-        await re.publish("SendUserMessage", {"user_id": data['user_id'], "content": text})
-        await re.publish('DBLVote', {'user_id': data['user_id'], 'datetime': time.isoformat()})
-
-    # DB vote
-    async with request.app['database']() as db:
-        await db('INSERT INTO dbl_votes (user_id, timestamp) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET timestamp=excluded.timestamp', data['user_id'], time)
-    return Response(status=200)
-
-
 @routes.get('/login_redirect')
 async def login_redirect(request:Request):
-    """Page the discord login redirects the user to when successfully logged in with Discord"""
+    """
+    Page the discord login redirects the user to when successfully logged in with Discord.
+    """
 
     await webutils.process_discord_login(request, ['identify', 'guilds'])
     session = await aiohttp_session.get_session(request)

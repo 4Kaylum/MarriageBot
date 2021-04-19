@@ -14,20 +14,24 @@ routes = RouteTableDef()
 
 
 @routes.get("/")
-@template('index.j2')
+@template('index.html.j2')
 @webutils.add_output_args()
 async def index(request:Request):
-    """Index of the website, has "login with Discord" button
-    If not logged in, all pages should redirect here"""
+    """
+    Index of the website, has "login with Discord" button
+    If not logged in, all pages should redirect here.
+    """
 
     return {}
 
 
 @routes.get("/blog/{code}")
-@template('blog.j2')
+@template('blog.html.j2')
 @webutils.add_output_args()
 async def blog(request:Request):
-    """Blog post handler"""
+    """
+    Blog post handler.
+    """
 
     # Grab the blog post from database
     url_code = request.match_info['code']
@@ -52,21 +56,25 @@ async def blog(request:Request):
 
 
 @routes.get('/settings')
-@template('settings.j2')
+@template('settings.html.j2')
 @webutils.add_output_args()
 @webutils.requires_login()
 async def settings(request:Request):
-    """Handles the main settings page for the bot"""
+    """
+    Handles the main settings page for the bot.
+    """
 
     return {}
 
 
 @routes.get('/user_settings')
-@template('user_settings.j2')
+@template('user_settings.html.j2')
 @webutils.add_output_args()
 @webutils.requires_login()
 async def user_settings(request:Request):
-    """Handles the users' individual settings pages"""
+    """
+    Handles the users' individual settings pages.
+    """
 
     # See if they're logged in
     session = await aiohttp_session.get_session(request)
@@ -113,7 +121,9 @@ async def user_settings(request:Request):
 
 @routes.get("/logout")
 async def logout(request:Request):
-    """Index of the website"""
+    """
+    Index of the website.
+    """
 
     session = await aiohttp_session.get_session(request)
     session.invalidate()
@@ -121,11 +131,13 @@ async def logout(request:Request):
 
 
 @routes.get("/guilds")
-@template('guild_picker.j2')
+@template('guild_picker.html.j2')
 @webutils.add_output_args()
 @webutils.requires_login()
 async def guild_picker(request:Request):
-    """Shows the guilds that the user has permission to change"""
+    """
+    Shows the guilds that the user has permission to change.
+    """
 
     # Get the guilds they're valid to alter
     all_guilds = await webutils.get_user_guilds(request)
@@ -163,10 +175,12 @@ async def guild_picker(request:Request):
 
 
 @routes.get('/tree_preview')
-@template('tree_preview.j2')
+@template('tree_preview.html.j2')
 @webutils.add_output_args()
 async def tree_preview(request:Request):
-    """Tree preview for the bot"""
+    """
+    Tree preview for the bot.
+    """
 
     # Grab the colours from the params
     colours_raw = {
@@ -197,11 +211,13 @@ async def tree_preview(request:Request):
 
 
 @routes.get('/guild_settings')
-@template('guild_settings_paypal.j2')
+@template('guild_settings_paypal.html.j2')
 @webutils.add_output_args()
 @webutils.requires_login()
 async def guild_settings_get_paypal(request:Request):
-    """Shows the settings for a particular guild"""
+    """
+    Shows the settings for a particular guild.
+    """
 
     # See if they're logged in
     guild_id = request.query.get('guild_id')
@@ -308,7 +324,9 @@ async def guild_settings_get_paypal(request:Request):
 
 @routes.get("/discord_oauth_login")
 async def login(request:Request):
-    """The redirect to the actual oauth login"""
+    """
+    The redirect to the actual oauth login.
+    """
 
     bot = request.app['bot']
     login_url = bot.get_invite_link(
